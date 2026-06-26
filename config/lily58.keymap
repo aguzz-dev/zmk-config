@@ -12,28 +12,28 @@
 &kp ESC    &kp N1  &kp N2  &kp N3    &kp N4   &kp N5                              &kp N6  &kp N7        &kp N8     &kp N9   &kp N0         &kp ENTER
 &kp TAB    &kp Q   &kp W   &kp F     &kp P    &kp B                               &kp J   &kp L         &kp U      &kp Y    &kp SEMICOLON  &kp INSERT
 &kp LSHFT  &kp A   &kp R   &kp S     &kp T    &kp G                               &kp M   &kp N         &kp E      &kp I    &kp O          &kp DELETE
-&kp LCTRL  &kp Z   &kp X   &kp C     &kp D    &kp V   &kp RA(N7)    &kp RA(BSLH)  &kp N   &kp M         &kp COMMA  &kp DOT  &kp LS(N7)     &kp BACKSPACE
+&kp LCTRL  &kp Z   &kp X   &kp C     &kp D    &kp V   &kp RA(N7)    &kp RA(BSLH)  &kp K   &kp H         &kp COMMA  &kp DOT  &kp LS(N7)     &kp BACKSPACE
                            &kp LALT  &kp ESC  &mo 2   &kp SPACE     &kp RET       &mo 1   &kp LEFT_GUI  &kp LSHFT
             >;
         };
 
         lower_layer {
             bindings = <
-&bt BT_CLR  &bt BT_SEL 0       &bt BT_SEL 1       &bt BT_SEL 2   &bt BT_SEL 3          &bt BT_SEL 4                           &kp C_MUTE    &kp C_VOLUME_DOWN      &kp C_VOLUME_UP  &trans           &trans        &trans
-&kp F1      &kp F2             &kp F3             &kp F4         &kp F5                &kp F6                                 &kp F7        &kp F8                 &kp F9           &kp F10          &kp F11       &kp F12
-&kp GRAVE   &kp QUESTION       &kp RA(NUMBER_2)   &kp LS(N8)     &kp RA(LEFT_BRACKET)  &kp NUBS                               &kp LS(NUBS)  &kp RA(RIGHT_BRACKET)  &kp LS(N9)       &kp EXCLAMATION  &kp RA(SCLN)  &kp KP_DIVIDE
-&trans      &ext_power EP_TOG  &ext_power EP_OFF  &kp RS(EQUAL)  &kp UNDER             &kp LS(SLASH)  &kp SQT    &kp LS(SQT)  &kp N1        &kp N2                 &kp N3           &kp LEFT         &kp DOWN      &kp RIGHT
-                                                  &trans         &trans                &trans         &trans     &trans       &trans        &kp LEFT_GUI           &kp LEFT_SHIFT
+&bt BT_CLR         &bt BT_SEL 0       &bt BT_SEL 1      &bt BT_SEL 2   &bt BT_SEL 3          &bt BT_SEL 4                            &kp C_MUTE    &kp C_VOLUME_DOWN      &kp C_VOLUME_UP  &trans           &trans        &trans
+&kp F1             &kp F2             &kp F3            &kp F4         &kp F5                &kp F6                                  &kp F7        &kp F8                 &kp F9           &kp F10          &kp F11       &kp F12
+&kp GRAVE          &kp QUESTION       &kp RA(NUMBER_2)  &kp LS(N8)     &kp RA(LEFT_BRACKET)  &kp NUBS                                &kp LS(NUBS)  &kp RA(RIGHT_BRACKET)  &kp LS(N9)       &kp EXCLAMATION  &kp RA(SCLN)  &kp RS(N6)
+&ext_power EP_OFF  &ext_power EP_TOG  &kp RA(N1)        &kp RS(EQUAL)  &kp UNDER             &kp SLASH     &kp SQT      &kp LS(SQT)  &kp LS(LBKT)  &kp LS(RBKT)           &kp LS(N4)       &kp RA(N3)       &kp LS(N5)    &kp BACKSPACE
+                                                        &trans         &trans                &trans        &kp SPACE    &kp ENTER    &trans        &kp LEFT_GUI           &kp LEFT_SHIFT
             >;
         };
 
         raise_layer {
             bindings = <
-&trans  &kp RA(N1)    &kp RA(N2)    &kp RA(N3)    &kp RA(N4)    &kp RA(N5)                       &kp C_MUTE     &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &kp PRINTSCREEN  &kp RA(N0)  &trans
-&trans  &kp RA(LBKT)  &kp RA(RBKT)  &kp RA(SCLN)  &kp RA(BSLH)  &kp RA(MINUS)                    &kp LBKT       &kp RBKT           &kp LBRC         &kp RBRC         &kp RA(Q)   &trans
-&trans  &kp MINUS     &kp SLASH     &kp EQUAL     &kp INT_RO    &kp UNDER                        &kp LS(N7)     &kp LS(N8)         &kp LS(N9)       &kp LS(N0)       &kp RA(E)   &trans
-&trans  &kp LS(LBKT)  &kp LS(RBKT)  &kp LS(SCLN)  &kp LS(BSLH)  &kp LS(MINUS)  &trans    &trans  &kp RA(GRAVE)  &kp RA(PLUS)       &kp RA(COMMA)    &kp RA(DOT)      &kp RA(A)   &trans
-                                    &trans        &trans        &trans         &trans    &trans  &trans         &trans             &trans
+&trans  &kp RA(N1)    &kp RA(N2)    &kp RA(N3)    &kp RA(N4)    &kp RA(N5)                             &kp C_MUTE     &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &kp PRINTSCREEN  &kp K_PREV  &kp K_NEXT
+&trans  &kp RA(LBKT)  &kp RA(RBKT)  &kp RA(SCLN)  &kp RA(BSLH)  &kp RA(MINUS)                          &kp LBKT       &kp RBKT           &kp LBRC         &kp RBRC         &kp RA(Q)   &trans
+&trans  &kp MINUS     &kp SLASH     &kp EQUAL     &kp INT_RO    &kp UNDER                              &kp LEFT       &kp DOWN           &kp UP           &kp RIGHT        &kp RA(E)   &trans
+&trans  &kp LS(LBKT)  &kp LS(RBKT)  &kp LS(SCLN)  &kp LS(BSLH)  &kp LS(MINUS)  &kp C_MENU    &kp CAPS  &kp RA(GRAVE)  &kp RA(PLUS)       &kp RA(COMMA)    &kp RA(DOT)      &kp RA(A)   &trans
+                                    &trans        &trans        &trans         &trans        &trans    &trans         &trans             &trans
             >;
         };
     };
