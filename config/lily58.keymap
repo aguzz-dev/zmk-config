@@ -1,39 +1,150 @@
+/*
+ * Lily58 - Colemak-DH para Windows con distribucion "Espanol (Espana)"
+ *
+ * IMPORTANTE: ZMK manda codigos de tecla "US". Como la PC esta en espanol,
+ * cada tecla se traduce. Por eso aca los simbolos estan elegidos por la
+ * tecla FISICA del layout espanol (ej: &kp SEMI = n con tilde, &kp LS(N8) = "(").
+ *
+ * Capas:
+ *   0 BASE  Colemak-DH, la N con tilde arriba de la O
+ *   1 SYM   (mantener pulgar izq. interior-medio) simbolos de programacion + F1-F12
+ *   2 NAV   (mantener pulgar der. interior-medio) flechas, inicio/fin, multimedia
+ *   3 ADJ   (SYM + NAV juntas) Bluetooth, USB/BLE, bootloader
+ *   4 GAME  QWERTY mano izquierda para LoL, sin mods ni hold-taps
+ *           Entrar/salir: tecla interior derecha (entre las dos mitades, abajo)
+ */
+
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/ext_power.h>
 #include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/outputs.h>
+
+#define BASE 0
+#define SYM  1
+#define NAV  2
+#define ADJ  3
+#define GAME 4
 
 / {
+    macros {
+        // En espanol ` ^ ~ son "teclas muertas": se manda la tecla + espacio
+        // para que salga el simbolo solo (util para JS, regex, etc.)
+        es_grave: es_grave {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_tap &kp LBKT &kp SPACE>;
+        };
+        es_caret: es_caret {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_tap &kp LS(LBKT) &kp SPACE>;
+        };
+        es_tilde: es_tilde {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_tap &kp RA(N4) &kp SPACE>;
+        };
+    };
+
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+        adjust {
+            if-layers = <SYM NAV>;
+            then-layer = <ADJ>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
-        default_layer {
+        // ,-----------------------------------------.                    ,-----------------------------------------.
+        // | ESC  |  1   |  2   |  3   |  4   |  5   |                    |  6   |  7   |  8   |  9   |  0   | ' ?  |
+        // | TAB  |  Q   |  W   |  F   |  P   |  B   |                    |  J   |  L   |  U   |  Y   |  Ñ   | ¡ ¿  |
+        // | SHFT |  A   |  R   |  S   |  T   |  G   |                    |  M   |  N   |  E   |  I   |  O   | ´ ¨  |
+        // | CTRL |  Z   |  X   |  C   |  D   |  V   |-------.    ,-------|  K   |  H   | , ;  | . :  | - _  | SHFT |
+        // `-----------------------------------------|  < >  |    | GAME  |-----------------------------------------'
+        //                    | ALT  | WIN  | SYM  | SPACE |    | ENTER | NAV  | BSPC |AltGr |
+        base {
+            display-name = "Base";
             bindings = <
-&kp ESC    &kp N1  &kp N2  &kp N3    &kp N4   &kp N5                              &kp N6  &kp N7        &kp N8     &kp N9   &kp N0         &kp ENTER
-&kp TAB    &kp Q   &kp W   &kp F     &kp P    &kp B                               &kp J   &kp L         &kp U      &kp Y    &kp SEMICOLON  &kp INSERT
-&kp LSHFT  &kp A   &kp R   &kp S     &kp T    &kp G                               &kp M   &kp N         &kp E      &kp I    &kp O          &kp DELETE
-&kp LCTRL  &kp Z   &kp X   &kp C     &kp D    &kp V   &kp RA(N7)    &kp RA(BSLH)  &kp K   &kp H         &kp COMMA  &kp DOT  &kp LS(N7)     &kp BACKSPACE
-                           &kp LALT  &kp ESC  &mo 2   &kp SPACE     &kp RET       &mo 1   &kp LEFT_GUI  &kp LSHFT
+&kp ESC    &kp N1  &kp N2  &kp N3    &kp N4    &kp N5                                &kp N6   &kp N7   &kp N8     &kp N9   &kp N0    &kp MINUS
+&kp TAB    &kp Q   &kp W   &kp F     &kp P     &kp B                                 &kp J    &kp L    &kp U      &kp Y    &kp SEMI  &kp EQUAL
+&kp LSHFT  &kp A   &kp R   &kp S     &kp T     &kp G                                 &kp M    &kp N    &kp E      &kp I    &kp O     &kp SQT
+&kp LCTRL  &kp Z   &kp X   &kp C     &kp D     &kp V   &kp NUBS          &tog GAME   &kp K    &kp H    &kp COMMA  &kp DOT  &kp FSLH  &kp RSHFT
+                           &kp LALT  &kp LGUI  &mo SYM &kp SPACE         &kp RET     &mo NAV  &kp BSPC &kp RALT
             >;
         };
 
-        lower_layer {
+        // ,-----------------------------------------.                    ,-----------------------------------------.
+        // |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |                    |  F7  |  F8  |  F9  | F10  | F11  | F12  |
+        // |  `   |  !   |  @   |  #   |  $   |  %   |                    |  ^   |  &   |  *   |  ~   |  |   |  \   |
+        // | SHFT |  {   |  }   |  (   |  )   |  =   |                    |  -   |  [   |  ]   |  +   |  '   |  "   |
+        // | CTRL |  <   |  >   |  ?   |  /   |  _   |-------.    ,-------|  ¿   |  ¡   |  ;   |  :   |  €   | SHFT |
+        // `-----------------------------------------|       |    |       |-----------------------------------------'
+        //                    |      |      | ▓▓▓▓ |       |    |       | ADJ  |      |      |
+        sym {
+            display-name = "Sym";
             bindings = <
-&bt BT_CLR         &bt BT_SEL 0       &bt BT_SEL 1      &bt BT_SEL 2   &bt BT_SEL 3          &bt BT_SEL 4                            &kp C_MUTE    &kp C_VOLUME_DOWN      &kp C_VOLUME_UP  &trans           &trans        &trans
-&kp F1             &kp F2             &kp F3            &kp F4         &kp F5                &kp F6                                  &kp F7        &kp F8                 &kp F9           &kp F10          &kp F11       &kp F12
-&kp GRAVE          &kp QUESTION       &kp RA(NUMBER_2)  &kp LS(N8)     &kp RA(LEFT_BRACKET)  &kp NUBS                                &kp LS(NUBS)  &kp RA(RIGHT_BRACKET)  &kp LS(N9)       &kp EXCLAMATION  &kp RA(SCLN)  &kp RS(N6)
-&ext_power EP_OFF  &ext_power EP_TOG  &kp RA(N1)        &kp RS(EQUAL)  &kp UNDER             &kp SLASH     &kp SQT      &kp LS(SQT)  &kp LS(LBKT)  &kp LS(RBKT)           &kp LS(N4)       &kp RA(N3)       &kp LS(N5)    &kp BACKSPACE
-                                                        &trans         &trans                &trans        &kp SPACE    &kp ENTER    &trans        &kp LEFT_GUI           &kp LEFT_SHIFT
+&kp F1     &kp F2       &kp F3       &kp F4      &kp F5      &kp F6                                 &kp F7         &kp F8       &kp F9       &kp F10      &kp F11     &kp F12
+&es_grave  &kp LS(N1)   &kp RA(N2)   &kp RA(N3)  &kp LS(N4)  &kp LS(N5)                             &es_caret      &kp LS(N6)   &kp LS(RBKT) &es_tilde    &kp RA(N1)  &kp RA(GRAVE)
+&trans     &kp RA(SQT)  &kp RA(BSLH) &kp LS(N8)  &kp LS(N9)  &kp LS(N0)                             &kp FSLH       &kp RA(LBKT) &kp RA(RBKT) &kp RBKT     &kp MINUS   &kp LS(N2)
+&trans     &kp NUBS     &kp LS(NUBS) &kp LS(MINUS) &kp LS(N7) &kp LS(FSLH) &trans          &trans     &kp LS(EQUAL)  &kp EQUAL    &kp LS(COMMA) &kp LS(DOT) &kp RA(E)  &trans
+                                     &trans      &trans      &trans      &trans            &trans     &trans         &trans       &trans
             >;
         };
 
-        raise_layer {
+        // ,-----------------------------------------.                    ,-----------------------------------------.
+        // |      |      |      |      |      |      |                    | MUTE | VOL- | VOL+ | PREV | PLAY | NEXT |
+        // |      |      |      |      |      |      |                    | PGUP | HOME |  UP  | END  | DEL  | INS  |
+        // |      | WIN  | ALT  | SHFT | CTRL |      |                    | PGDN | LEFT | DOWN |RIGHT |PRTSC |      |
+        // |      |CTRL+Z|CTRL+X|CTRL+C|CTRL+V|CTRL+Y|-------.    ,-------|      |      |      |      |      |      |
+        // `-----------------------------------------|       |    |       |-----------------------------------------'
+        //                    |      |      | ADJ  |       |    |       | ▓▓▓▓ |      |      |
+        nav {
+            display-name = "Nav";
             bindings = <
-&trans  &kp RA(N1)    &kp RA(N2)    &kp RA(N3)    &kp RA(N4)    &kp RA(N5)                             &kp C_MUTE     &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &kp PRINTSCREEN  &kp K_PREV  &kp K_NEXT
-&trans  &kp RA(LBKT)  &kp RA(RBKT)  &kp RA(SCLN)  &kp RA(BSLH)  &kp RA(MINUS)                          &kp LBKT       &kp RBKT           &kp LBRC         &kp RBRC         &kp RA(Q)   &trans
-&trans  &kp MINUS     &kp SLASH     &kp EQUAL     &kp INT_RO    &kp UNDER                              &kp LEFT       &kp DOWN           &kp UP           &kp RIGHT        &kp RA(E)   &trans
-&trans  &kp LS(LBKT)  &kp LS(RBKT)  &kp LS(SCLN)  &kp LS(BSLH)  &kp LS(MINUS)  &kp C_MENU    &kp CAPS  &kp RA(GRAVE)  &kp RA(PLUS)       &kp RA(COMMA)    &kp RA(DOT)      &kp RA(A)   &trans
-                                    &trans        &trans        &trans         &trans        &trans    &trans         &trans             &trans
+&trans  &trans      &trans      &trans      &trans      &trans                           &kp C_MUTE  &kp C_VOL_DN  &kp C_VOL_UP  &kp C_PREV  &kp C_PP     &kp C_NEXT
+&trans  &trans      &trans      &trans      &trans      &trans                           &kp PG_UP   &kp HOME      &kp UP        &kp END     &kp DEL      &kp INS
+&trans  &kp LGUI    &kp LALT    &kp LSHFT   &kp LCTRL   &trans                           &kp PG_DN   &kp LEFT      &kp DOWN      &kp RIGHT   &kp PSCRN    &trans
+&trans  &kp LC(Z)   &kp LC(X)   &kp LC(C)   &kp LC(V)   &kp LC(Y)  &trans      &trans    &trans      &trans        &trans        &trans      &trans       &trans
+                                &trans      &trans      &trans     &trans      &trans    &trans      &trans        &trans
+            >;
+        };
+
+        // ,-----------------------------------------.                    ,-----------------------------------------.
+        // | BT0  | BT1  | BT2  | BT3  | BT4  |BT CLR|                    |      |      |      |      |      |      |
+        // | BOOT |RESET |      |      |      |      |                    |      |      |      |      |RESET | BOOT |
+        // |      | USB  | BLE  |      |      |      |                    |      |      |      |      |      |      |
+        // |      |      |      |      |      |      |-------.    ,-------|      |      |      |      |      |      |
+        // `-----------------------------------------|       |    |       |-----------------------------------------'
+        adjust {
+            display-name = "Adjust";
+            bindings = <
+&bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_CLR                  &trans  &trans  &trans  &trans  &trans      &trans
+&bootloader   &sys_reset    &trans        &trans        &trans        &trans                      &trans  &trans  &trans  &trans  &sys_reset  &bootloader
+&trans        &out OUT_USB  &out OUT_BLE  &trans        &trans        &trans                      &trans  &trans  &trans  &trans  &trans      &trans
+&trans        &trans        &trans        &trans        &trans        &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans      &trans
+                                          &trans        &trans        &trans  &trans      &trans  &trans  &trans  &trans
+            >;
+        };
+
+        // Solo mano izquierda, QWERTY real (Q W E R / D F / items 1-7 / B recall / P tienda)
+        // ,-----------------------------------------.
+        // | ESC  |  1   |  2   |  3   |  4   |  5   |      (lado derecho = igual que BASE)
+        // | TAB  |  Q   |  W   |  E   |  R   |  T   |
+        // | SHFT |  A   |  S   |  D   |  F   |  G   |
+        // | CTRL |  Z   |  X   |  C   |  V   |  B   |-------.    ,-------.
+        // `-----------------------------------------|   P   |    | GAME  |  <- toca de nuevo para salir
+        //                    | ALT  |  6   |  7   | SPACE |
+        game {
+            display-name = "Game";
+            bindings = <
+&kp ESC    &kp N1  &kp N2  &kp N3    &kp N4  &kp N5                          &trans  &trans  &trans  &trans  &trans  &trans
+&kp TAB    &kp Q   &kp W   &kp E     &kp R   &kp T                           &trans  &trans  &trans  &trans  &trans  &trans
+&kp LSHFT  &kp A   &kp S   &kp D     &kp F   &kp G                           &trans  &trans  &trans  &trans  &trans  &trans
+&kp LCTRL  &kp Z   &kp X   &kp C     &kp V   &kp B   &kp P           &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                           &kp LALT  &kp N6  &kp N7  &kp SPACE       &trans  &trans  &trans  &trans
             >;
         };
     };
