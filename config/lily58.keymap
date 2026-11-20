@@ -129,22 +129,22 @@
             >;
         };
 
-        // Solo mano izquierda, QWERTY real (Q W E R / D F / items 1-7 / B recall / P tienda)
+        // Solo mano izquierda, Q W E R en la fila del medio
         // ,-----------------------------------------.
-        // | ESC  |  1   |  2   |  3   |  4   |  5   |      (lado derecho = igual que BASE)
-        // | TAB  |  Q   |  W   |  E   |  R   |  T   |
-        // | SHFT |  A   |  S   |  D   |  F   |  G   |
+        // | ESC  |  F1  |  F2  |  F3  |  F4  |  F5  |      (lado derecho = igual que BASE)
+        // | TAB  |  1   |  2   |  3   |  4   |  5   |
+        // | SHFT |  A   |  Q   |  W   |  E   |  R   |
         // | CTRL |  Z   |  X   |  C   |  V   |  B   |-------.    ,-------.
         // `-----------------------------------------|   P   |    | GAME  |  <- toca de nuevo para salir
-        //                    | ALT  |  6   |  7   | SPACE |
+        //                    | SHFT |  N   |SPACE | SPACE |
         game {
             display-name = "Game";
             bindings = <
-&kp ESC    &kp N1  &kp N2  &kp N3    &kp N4  &kp N5                          &trans  &trans  &trans  &trans  &trans  &trans
-&kp TAB    &kp Q   &kp W   &kp E     &kp R   &kp T                           &trans  &trans  &trans  &trans  &trans  &trans
-&kp LSHFT  &kp A   &kp S   &kp D     &kp F   &kp G                           &trans  &trans  &trans  &trans  &trans  &trans
+&kp ESC    &kp F1  &kp F2  &kp F3    &kp F4  &kp F5                          &trans  &trans  &trans  &trans  &trans  &trans
+&kp TAB    &kp N1  &kp N2  &kp N3    &kp N4  &kp N5                          &trans  &trans  &trans  &trans  &trans  &trans
+&kp LSHFT  &kp A   &kp Q   &kp W     &kp E   &kp R                           &trans  &trans  &trans  &trans  &trans  &trans
 &kp LCTRL  &kp Z   &kp X   &kp C     &kp V   &kp B   &kp P           &trans  &trans  &trans  &trans  &trans  &trans  &trans
-                           &kp LALT  &kp N6  &kp N7  &kp SPACE       &trans  &trans  &trans  &trans
+                           &kp LSHFT &kp N   &kp SPACE &kp SPACE     &trans  &trans  &trans  &trans
             >;
         };
     };
