@@ -1,17 +1,24 @@
 /*
  * Lily58 - Colemak-DH para Windows con distribucion "Espanol (Espana)"
+ * Enfocado en velocidad y ergonomia al tipear.
  *
  * IMPORTANTE: ZMK manda codigos de tecla "US". Como la PC esta en espanol,
  * cada tecla se traduce. Por eso aca los simbolos estan elegidos por la
  * tecla FISICA del layout espanol (ej: &kp SEMI = n con tilde, &kp LS(N8) = "(").
  *
+ * Home row mods (mantener la letra = modificador, tocarla = letra):
+ *   A = Win   R = Alt   S = Shift   T = Ctrl   |   N = Ctrl   E = Shift   I = Alt   O = Win
+ *   Configuracion "timeless": si venis tipeando rapido (< 150 ms entre teclas)
+ *   siempre sale la letra, y el modificador solo se activa combinado con
+ *   una tecla de la OTRA mano (o un pulgar). Asi no hay letras fantasma.
+ *   Regla practica: Ctrl+C = mantener N (mano derecha) + tocar C.
+ *
  * Capas:
- *   0 BASE  Colemak-DH, la N con tilde arriba de la O
- *   1 SYM   (mantener pulgar izq. interior-medio) simbolos de programacion + F1-F12
- *   2 NAV   (mantener pulgar der. interior-medio) flechas, inicio/fin, multimedia
- *   3 ADJ   (SYM + NAV juntas) Bluetooth, USB/BLE, bootloader
- *   4 GAME  QWERTY mano izquierda para LoL, sin mods ni hold-taps
- *           Entrar/salir: tecla interior derecha (entre las dos mitades, abajo)
+ *   0 BASE   Colemak-DH, la N con tilde arriba de la O
+ *   1 PLAIN  Apaga los home row mods (toggle desde ADJ), por si molestan
+ *   2 SYM    (mantener pulgar izq.) simbolos de programacion + F1-F12
+ *   3 NAV    (mantener pulgar der.) flechas, inicio/fin, multimedia
+ *   4 ADJ    (SYM + NAV juntas) Bluetooth, USB/BLE, bootloader, HRM on/off
  */
 
 #include <behaviors.dtsi>
@@ -20,13 +27,48 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/outputs.h>
 
-#define BASE 0
-#define SYM  1
-#define NAV  2
-#define ADJ  3
-#define GAME 4
+#define BASE  0
+#define PLAIN 1
+#define SYM   2
+#define NAV   3
+#define ADJ   4
+
+// Posiciones fisicas de las teclas (0..57)
+#define KEYS_L 0 1 2 3 4 5 12 13 14 15 16 17 24 25 26 27 28 29 36 37 38 39 40 41 42
+#define KEYS_R 6 7 8 9 10 11 18 19 20 21 22 23 30 31 32 33 34 35 43 44 45 46 47 48 49
+#define THUMBS 50 51 52 53 54 55 56 57
+
+// Caps Word: tambien sigue activo con "_" (en espanol es Shift + la tecla de "-")
+&caps_word {
+    continue-list = <LS(FSLH) BACKSPACE DELETE>;
+};
 
 / {
+    behaviors {
+        hml: home_row_mod_left {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <280>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            hold-trigger-key-positions = <KEYS_R THUMBS>;
+            hold-trigger-on-release;
+            bindings = <&kp>, <&kp>;
+        };
+        hmr: home_row_mod_right {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <280>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            hold-trigger-key-positions = <KEYS_L THUMBS>;
+            hold-trigger-on-release;
+            bindings = <&kp>, <&kp>;
+        };
+    };
+
     macros {
         // En espanol ` ^ ~ son "teclas muertas": se manda la tecla + espacio
         // para que salga el simbolo solo (util para JS, regex, etc.)
@@ -61,18 +103,30 @@
         // ,-----------------------------------------.                    ,-----------------------------------------.
         // | ESC  |  1   |  2   |  3   |  4   |  5   |                    |  6   |  7   |  8   |  9   |  0   | ' ?  |
         // | TAB  |  Q   |  W   |  F   |  P   |  B   |                    |  J   |  L   |  U   |  Y   |  Ñ   | ¡ ¿  |
-        // | SHFT |  A   |  R   |  S   |  T   |  G   |                    |  M   |  N   |  E   |  I   |  O   | ´ ¨  |
+        // | SHFT |A/Win |R/Alt |S/Shf |T/Ctl |  G   |                    |  M   |N/Ctl |E/Shf |I/Alt |O/Win | ´ ¨  |
         // | CTRL |  Z   |  X   |  C   |  D   |  V   |-------.    ,-------|  K   |  H   | , ;  | . :  | - _  | SHFT |
-        // `-----------------------------------------|  < >  |    | GAME  |-----------------------------------------'
-        //                    | ALT  | WIN  | SYM  | SPACE |    | ENTER | NAV  | BSPC |AltGr |
+        // `-----------------------------------------|  < >  |    |CAPSWRD|-----------------------------------------'
+        //                    | ALT  | ESC  | SYM  | SPACE |    | ENTER | BSPC | NAV  |AltGr |
         base {
             display-name = "Base";
             bindings = <
-&kp ESC    &kp N1  &kp N2  &kp N3    &kp N4    &kp N5                                &kp N6   &kp N7   &kp N8     &kp N9   &kp N0    &kp MINUS
-&kp TAB    &kp Q   &kp W   &kp F     &kp P     &kp B                                 &kp J    &kp L    &kp U      &kp Y    &kp SEMI  &kp EQUAL
-&kp LSHFT  &kp A   &kp R   &kp S     &kp T     &kp G                                 &kp M    &kp N    &kp E      &kp I    &kp O     &kp SQT
-&kp LCTRL  &kp Z   &kp X   &kp C     &kp D     &kp V   &kp NUBS          &tog GAME   &kp K    &kp H    &kp COMMA  &kp DOT  &kp FSLH  &kp RSHFT
-                           &kp LALT  &kp LGUI  &mo SYM &kp SPACE         &kp RET     &mo NAV  &kp BSPC &kp RALT
+&kp ESC    &kp N1        &kp N2        &kp N3         &kp N4         &kp N5                               &kp N6   &kp N7         &kp N8         &kp N9        &kp N0        &kp MINUS
+&kp TAB    &kp Q         &kp W         &kp F          &kp P          &kp B                                &kp J    &kp L          &kp U          &kp Y         &kp SEMI      &kp EQUAL
+&kp LSHFT  &hml LGUI A   &hml LALT R   &hml LSHFT S   &hml LCTRL T   &kp G                                &kp M    &hmr RCTRL N   &hmr RSHFT E   &hmr LALT I   &hmr RGUI O   &kp SQT
+&kp LCTRL  &kp Z         &kp X         &kp C          &kp D          &kp V    &kp NUBS      &caps_word    &kp K    &kp H          &kp COMMA      &kp DOT       &kp FSLH      &kp RSHFT
+                                       &kp LALT       &kp ESC        &mo SYM  &kp SPACE     &kp RET       &kp BSPC &mo NAV        &kp RALT
+            >;
+        };
+
+        // Igual que BASE pero sin home row mods (activar/desactivar desde ADJ)
+        plain {
+            display-name = "Plain";
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &kp A   &kp R   &kp S   &kp T   &trans                      &trans  &kp N   &kp E   &kp I   &kp O   &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                        &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans
             >;
         };
 
@@ -82,7 +136,7 @@
         // | SHFT |  {   |  }   |  (   |  )   |  =   |                    |  -   |  [   |  ]   |  +   |  '   |  "   |
         // | CTRL |  <   |  >   |  ?   |  /   |  _   |-------.    ,-------|  ¿   |  ¡   |  ;   |  :   |  €   | SHFT |
         // `-----------------------------------------|       |    |       |-----------------------------------------'
-        //                    |      |      | ▓▓▓▓ |       |    |       | ADJ  |      |      |
+        //                    |      |      | ▓▓▓▓ |       |    |       |      | ADJ  |      |
         sym {
             display-name = "Sym";
             bindings = <
@@ -100,7 +154,7 @@
         // |      | WIN  | ALT  | SHFT | CTRL |      |                    | PGDN | LEFT | DOWN |RIGHT |PRTSC |      |
         // |      |CTRL+Z|CTRL+X|CTRL+C|CTRL+V|CTRL+Y|-------.    ,-------|      |      |      |      |      |      |
         // `-----------------------------------------|       |    |       |-----------------------------------------'
-        //                    |      |      | ADJ  |       |    |       | ▓▓▓▓ |      |      |
+        //                    |      |      | ADJ  |       |    |       |      | ▓▓▓▓ |      |
         nav {
             display-name = "Nav";
             bindings = <
@@ -115,36 +169,17 @@
         // ,-----------------------------------------.                    ,-----------------------------------------.
         // | BT0  | BT1  | BT2  | BT3  | BT4  |BT CLR|                    |      |      |      |      |      |      |
         // | BOOT |RESET |      |      |      |      |                    |      |      |      |      |RESET | BOOT |
-        // |      | USB  | BLE  |      |      |      |                    |      |      |      |      |      |      |
+        // |      | USB  | BLE  |      |      |      |                    |HRM on/off|   |      |      |      |      |
         // |      |      |      |      |      |      |-------.    ,-------|      |      |      |      |      |      |
         // `-----------------------------------------|       |    |       |-----------------------------------------'
         adjust {
             display-name = "Adjust";
             bindings = <
-&bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_CLR                  &trans  &trans  &trans  &trans  &trans      &trans
-&bootloader   &sys_reset    &trans        &trans        &trans        &trans                      &trans  &trans  &trans  &trans  &sys_reset  &bootloader
-&trans        &out OUT_USB  &out OUT_BLE  &trans        &trans        &trans                      &trans  &trans  &trans  &trans  &trans      &trans
-&trans        &trans        &trans        &trans        &trans        &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans      &trans
-                                          &trans        &trans        &trans  &trans      &trans  &trans  &trans  &trans
-            >;
-        };
-
-        // Solo mano izquierda, Q W E R en la fila del medio
-        // ,-----------------------------------------.
-        // | ESC  |  F1  |  F2  |  F3  |  F4  |  F5  |      (lado derecho = igual que BASE)
-        // | TAB  |  1   |  2   |  3   |  4   |  5   |
-        // | SHFT |  A   |  Q   |  W   |  E   |  R   |
-        // | CTRL |  Z   |  X   |  C   |  V   |  B   |-------.    ,-------.
-        // `-----------------------------------------|   P   |    | GAME  |  <- toca de nuevo para salir
-        //                    | SHFT |  N   |SPACE | SPACE |
-        game {
-            display-name = "Game";
-            bindings = <
-&kp ESC    &kp F1  &kp F2  &kp F3    &kp F4  &kp F5                          &trans  &trans  &trans  &trans  &trans  &trans
-&kp TAB    &kp N1  &kp N2  &kp N3    &kp N4  &kp N5                          &trans  &trans  &trans  &trans  &trans  &trans
-&kp LSHFT  &kp A   &kp Q   &kp W     &kp E   &kp R                           &trans  &trans  &trans  &trans  &trans  &trans
-&kp LCTRL  &kp Z   &kp X   &kp C     &kp V   &kp B   &kp P           &trans  &trans  &trans  &trans  &trans  &trans  &trans
-                           &kp LSHFT &kp N   &kp SPACE &kp SPACE     &trans  &trans  &trans  &trans
+&bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_CLR                  &trans      &trans  &trans  &trans  &trans      &trans
+&bootloader   &sys_reset    &trans        &trans        &trans        &trans                      &trans      &trans  &trans  &trans  &sys_reset  &bootloader
+&trans        &out OUT_USB  &out OUT_BLE  &trans        &trans        &trans                      &tog PLAIN  &trans  &trans  &trans  &trans      &trans
+&trans        &trans        &trans        &trans        &trans        &trans  &trans      &trans  &trans      &trans  &trans  &trans  &trans      &trans
+                                          &trans        &trans        &trans  &trans      &trans  &trans      &trans  &trans
             >;
         };
     };
