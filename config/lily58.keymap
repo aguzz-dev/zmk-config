@@ -10,10 +10,11 @@
  *   Ctrl+C = Ctrl del menique izquierdo + C.
  *
  * Capas:
- *   0 BASE  Colemak-DH, la N con tilde arriba de la O
- *   1 SYM   (mantener pulgar izq.) simbolos de programacion + F1-F12
- *   2 NAV   (mantener pulgar der.) flechas, inicio/fin, multimedia
- *   3 ADJ   (SYM + NAV juntas) Bluetooth, USB/BLE, bootloader
+ *   0 BASE   Colemak-DH, la N con tilde arriba de la O
+ *   1 SYM    (mantener pulgar izq.) simbolos de programacion + F1-F12
+ *   2 NAV    (mantener pulgar der.) flechas, inicio/fin, multimedia
+ *   3 ADJ    (SYM + NAV juntas) Bluetooth, USB/BLE, bootloader
+ *   4 MOUSE  (mantener Esc del pulgar izq.) mover el mouse con las teclas de flechas de NAV
  */
 
 #include <behaviors.dtsi>
@@ -21,11 +22,13 @@
 #include <dt-bindings/zmk/ext_power.h>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/outputs.h>
+#include <dt-bindings/zmk/pointing.h>
 
-#define BASE 0
-#define SYM  1
-#define NAV  2
-#define ADJ  3
+#define BASE  0
+#define SYM   1
+#define NAV   2
+#define ADJ   3
+#define MOUSE 4
 
 // Caps Word: tambien sigue activo con "_" (en espanol es Shift + la tecla de "-")
 &caps_word {
@@ -70,7 +73,7 @@
         // | SHFT |  A   |  R   |  S   |  T   |  G   |                    |  M   |  N   |  E   |  I   |  O   | ´ ¨  |
         // | CTRL |  Z   |  X   |  C   |  D   |  V   |-------.    ,-------|  K   |  H   | , ;  | . :  | - _  | SHFT |
         // `-----------------------------------------|  < >  |    |CAPSWRD|-----------------------------------------'
-        //                    | ALT  | ESC  | SYM  | SPACE |    | ENTER | BSPC | NAV  |AltGr |
+        //                    | ALT  |MOUSE | SYM  | SPACE |    | ENTER | BSPC | NAV  |AltGr |
         base {
             display-name = "Base";
             bindings = <
@@ -78,7 +81,7 @@
 &kp TAB    &kp Q         &kp W         &kp F          &kp P          &kp B                                &kp J    &kp L          &kp U          &kp Y         &kp SEMI      &kp EQUAL
 &kp LSHFT  &kp A         &kp R         &kp S          &kp T          &kp G                                &kp M    &kp N          &kp E          &kp I         &kp O         &kp SQT
 &kp LCTRL  &kp Z         &kp X         &kp C          &kp D          &kp V    &kp NUBS      &caps_word    &kp K    &kp H          &kp COMMA      &kp DOT       &kp FSLH      &kp RSHFT
-                                       &kp LALT       &kp ESC        &mo SYM  &kp SPACE     &kp RET       &kp BSPC &mo NAV        &kp RALT
+                                       &kp LALT       &mo MOUSE      &mo SYM  &kp SPACE     &kp RET       &kp BSPC &mo NAV        &kp RALT
             >;
         };
 
@@ -132,6 +135,27 @@
 &trans        &out OUT_USB  &out OUT_BLE  &trans        &trans        &trans                      &trans      &trans  &trans  &trans  &trans      &trans
 &trans        &trans        &trans        &trans        &trans        &trans  &trans      &trans  &trans      &trans  &trans  &trans  &trans      &trans
                                           &trans        &trans        &trans  &trans      &trans  &trans      &trans  &trans
+            >;
+        };
+
+        // Mouse: mantener Esc (pulgar izq.). Posiciones iguales a las flechas de NAV.
+        //   HOME = click izquierdo   END = click derecho   PG_DN = click central (ruedita)
+        //   UP / LEFT / DOWN / RIGHT = mover el mouse      DEL / INS = scroll arriba / abajo
+        // Lo demas (letras, pulgares) cae a la capa BASE, asi que se puede seguir tipeando.
+        // ,-----------------------------------------.                    ,-----------------------------------------.
+        // |      |      |      |      |      |      |                    |      |      |      |      |      |      |
+        // |      |      |      |      |      |      |                    |      |LCLK  |  UP  | RCLK |SCRL+ |SCRL- |
+        // |      |      |      |      |      |      |                    | MCLK | LEFT | DOWN |RIGHT |      |      |
+        // |      |      |      |      |      |      |-------.    ,-------|      |      |      |      |      |      |
+        // `-----------------------------------------|       |    |       |-----------------------------------------'
+        mouse {
+            display-name = "Mouse";
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                      &trans  &mkp LCLK  &mmv MOVE_UP  &mkp RCLK  &msc SCRL_UP  &msc SCRL_DOWN
+&trans  &trans  &trans  &trans  &trans  &trans                      &mkp MCLK  &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_RIGHT  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                        &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans
             >;
         };
     };
